@@ -58,5 +58,3 @@ ru_RU.blogs <- readin("~/final/ru_RU/ru_RU.blogs.txt", line_count)
 ru_RU.news <- readin("~/final/ru_RU/ru_RU.news.txt", line_count)
 ru_RU.twitter <- readin("~/final/ru_RU/ru_RU.twitter.txt", line_count)
 ```
-
-New line
