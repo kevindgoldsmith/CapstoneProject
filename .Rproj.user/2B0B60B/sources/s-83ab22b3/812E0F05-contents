@@ -1,0 +1,23 @@
+---
+title: "CapstoneProject"
+author: "Kevin Goldsmith"
+date: "10/24/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Read in data
+```{r}
+myURL <- "https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip"
+ 
+dateDownloaded <- date()
+ 
+ if(!file.exists("rawdata.zip")){
+     download.file(myURL, destfile = "rawdata.zip", method = "curl")
+     unzip("rawdata.zip")
+}
+```
+
