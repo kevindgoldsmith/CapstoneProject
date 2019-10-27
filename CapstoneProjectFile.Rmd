@@ -42,19 +42,19 @@ Read in data
 ```{r}
 line_count <- 1000
 
-en_US.blogs <- readin("~/final/en_US/en_US.blogs.txt", line_count)
-en_US.news <- readin("~/final/en_US/en_US.news.txt", line_count)
-en_US.twitter <- readin("~/final/en_US/en_US.twitter.txt", line_count)
+en_US.blogs <- readin("~/CapstoneProject/final/en_US/en_US.blogs.txt", line_count)
+en_US.news <- readin("~/CapstoneProject/final/en_US/en_US.news.txt", line_count)
+en_US.twitter <- readin("~/CapstoneProject/final/en_US/en_US.twitter.txt", line_count)
 
-de_DE.blogs <- readin("~/final/de_DE/de_DE.blogs.txt", line_count)
-de_DE.news <- readin("~/final/de_DE/de_DE.news.txt", line_count)
-de_DE.twitter <- readin("~/final/de_DE/de_DE.twitter.txt", line_count)
+de_DE.blogs <- readin("~/CapstoneProject/final/de_DE/de_DE.blogs.txt", line_count)
+de_DE.news <- readin("~/CapstoneProject/final/de_DE/de_DE.news.txt", line_count)
+de_DE.twitter <- readin("~/CapstoneProject/final/de_DE/de_DE.twitter.txt", line_count)
 
-fi_FI.blogs <- readin("~/final/fi_FI/fi_FI.blogs.txt", line_count)
-fi_FI.news <- readin("~/final/fi_FI/fi_FI.news.txt", line_count)
-fi_FI.twitter <- readin("~/final/fi_FI/fi_FI.twitter.txt", line_count)
+fi_FI.blogs <- readin("~/CapstoneProject/final/fi_FI/fi_FI.blogs.txt", line_count)
+fi_FI.news <- readin("~/CapstoneProject/final/fi_FI/fi_FI.news.txt", line_count)
+fi_FI.twitter <- readin("~/CapstoneProject/final/fi_FI/fi_FI.twitter.txt", line_count)
 
-ru_RU.blogs <- readin("~/final/ru_RU/ru_RU.blogs.txt", line_count)
-ru_RU.news <- readin("~/final/ru_RU/ru_RU.news.txt", line_count)
-ru_RU.twitter <- readin("~/final/ru_RU/ru_RU.twitter.txt", line_count)
+ru_RU.blogs <- readin("~/CapstoneProject/final/ru_RU/ru_RU.blogs.txt", line_count)
+ru_RU.news <- readin("~/CapstoneProject/final/ru_RU/ru_RU.news.txt", line_count)
+ru_RU.twitter <- readin("~/CapstoneProject/final/ru_RU/ru_RU.twitter.txt", line_count)
 ```
