@@ -14,6 +14,8 @@ Load libraries
 library(readr)
 library(data.table)
 library(tm)
+library(quanteda)
+library(readtext)
 ```
 
 Read in data
@@ -28,26 +30,13 @@ dateDownloaded <- date()
 }
 ```
 
-Define readin function
-```{r}
-readin <- function(file_path, lang) {
-  new_file <- VCorpus(DirSource(file_path),
-                     readerControl = list(reader = readPlain,
-                                          language = lang,
-                                          load = TRUE
-                                          )
-  )
-  new_file
-}
-```
-
 Read in data
 ```{r}
-en_corp <- readin("~/CapstoneProject/final/en_US", "en_US")
-de_corp <- readin("~/CapstoneProject/final/de_DE", "de_DE")
-fi_corp <- readin("~/CapstoneProject/final/fi_FI", "fi_FI")
-ru_corp <- readin("~/CapstoneProject/final/ru_RU", "ru_RU")
+en_corp <- corpus(readtext("~/CapstoneProject/final/en_US"))
+de_corp <- corpus(readtext("~/CapstoneProject/final/de_DE"))
+fi_corp <- corpus(readtext("~/CapstoneProject/final/fi_FI"))
+ru_corp <- corpus(readtext("~/CapstoneProject/final/ru_RU"))
 
-corp <- c(en_corp, de_corp, fi_corp, ru_corp)
+corp <- en_corp + de_corp + fi_corp + ru_corp
 rm(en_corp, de_corp, fi_corp, ru_corp)
 ```
