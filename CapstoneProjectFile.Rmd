@@ -39,4 +39,5 @@ ru_corp <- corpus(readtext("~/CapstoneProject/final/ru_RU"))
 
 corp <- en_corp + de_corp + fi_corp + ru_corp
 rm(en_corp, de_corp, fi_corp, ru_corp)
+change
 ```
