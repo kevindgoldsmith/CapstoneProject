@@ -11,11 +11,16 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Load libraries
 ```{r}
+set.seed(12345)
+
 library(readr)
 library(data.table)
 library(tm)
 library(quanteda)
 library(readtext)
+library(methods)
+library(utils)
+library(LaF)
 ```
 
 Read in data
@@ -30,14 +35,41 @@ dateDownloaded <- date()
 }
 ```
 
-Read in data
+Function to read in data
 ```{r}
-en_corp <- corpus(readtext("~/CapstoneProject/final/en_US"))
-de_corp <- corpus(readtext("~/CapstoneProject/final/de_DE"))
-fi_corp <- corpus(readtext("~/CapstoneProject/final/fi_FI"))
-ru_corp <- corpus(readtext("~/CapstoneProject/final/ru_RU"))
+create_file <- function(file_name, URL, records = 1000, increment = 10000) {
 
-corp <- en_corp + de_corp + fi_corp + ru_corp
-rm(en_corp, de_corp, fi_corp, ru_corp)
-change
+  assign(deparse(substitute(file_name)), rep(0, records), envir = .GlobalEnv)
+  helper <- rep(0, records)
+    
+  flag = 0
+  n_lines <<- 0
+  while (flag != 1){
+    a = length(readr::read_lines(URL, skip = n_lines, n_max = 2))
+    if(a == 0) {flag = 1}
+    n_lines <<- n_lines + increment
+  }
+  n_lines <<- n_lines - increment * 2
+  flag = 0
+  
+  for (i in 1:records){
+    helper[i] <- readr::read_lines(URL, skip =
+                              round(runif(1, min = 1, max = n_lines)),
+                              n_max = 1)
+  }
+
+  assign(deparse(substitute(file_name)), helper, envir = .GlobalEnv)
+}
+```
+
+Read in US files
+```{r}
+create_file(US.blogs_corp, "~/CapstoneProject/final/en_US/en_US.blogs.txt", 1000, 10000)
+create_file(US.twit_corp, "~/CapstoneProject/final/en_US/en_US.twitter.txt", 1000, 10000)
+create_file(US.news_corp, "~/CapstoneProject/final/en_US/en_US.news.txt", 1000, 10000)
+
+```
+
+
+
 ```
