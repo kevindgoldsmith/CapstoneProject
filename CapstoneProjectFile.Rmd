@@ -62,16 +62,31 @@ create_file <- function(file_name, URL, records = 1000, increment = 10000) {
 }
 ```
 
-Read in US files
+Read in US files, create combined corpus and DFM
 ```{r}
-create_file(US.blogs_corp, "~/CapstoneProject/final/en_US/en_US.blogs.txt", 10000, 10000)
-create_file(US.twit_corp, "~/CapstoneProject/final/en_US/en_US.twitter.txt", 10000, 10000)
-create_file(US.news_corp, "~/CapstoneProject/final/en_US/en_US.news.txt", 10000, 10000)
+create_file(US.blogs_corp, "~/CapstoneProject/final/en_US/en_US.blogs.txt", 100)
+create_file(US.twit_corp, "~/CapstoneProject/final/en_US/en_US.twitter.txt", 100)
+create_file(US.news_corp, "~/CapstoneProject/final/en_US/en_US.news.txt", 100)
 
+US.blogs_corp <- corpus(US.blogs_corp)
+US.news_corp <- corpus(US.news_corp)
+US.twit_corp <- corpus(US.twit_corp)
+
+combined_corp <- US.blogs_corp + US.news_corp + US.twit_corp
+combined_tok <- tokens(combined_corp)
+```
+
+```{r}
+download.file("https://raw.githubusercontent.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words/master/en", 
+              destfile = "profanity.txt", method = "curl")
+
+profanity <- readLines("profanity.txt")
+
+combined_tok <- tokens_select(combined_tok, pattern = profanity, selection = "remove")
 ```
 
 Quiz 1 functions 
-```{r}
+#```{r}
 max(sapply(US.blogs_corp,nchar))
 max(sapply(US.news_corp,nchar))
 max(sapply(US.twit_corp,nchar))
@@ -84,5 +99,39 @@ textstat_frequency(dfm_select(dfm(US.twit_corp), pattern = "biostats"))
 textstat_frequency(dfm_select(dfm(US.twit_corp), pattern = 
                                 "A computer once beat me at chess, but it was no match for me at kickboxing")
                    )
+
+```
+
+More cleanup; show top frequency
+```{r}
+combined_tok <- tokens(combined_tok, remove_punct = TRUE, remove_numbers = TRUE)
+combined_dfm <- dfm(combined_tok)
+textplot_wordcloud(combined_dfm)
+
+```
+
+How many words needed for x% coverage?
+```{r}
+coverage <- function(dfm, percent){
+  flag = 0
+  partial = 0
+  total = sum(textstat_frequency(dfm)$frequency)
+  i = 1
+  
+  while (flag == 0){
+    partial = partial + textstat_frequency(dfm)[i]$frequency
+    if (partial >= total * (percent / 100)) {flag = 1}
+    i = i + 1
+  }
+  i
+}
+
+coverage(combined_dfm, 50)
+coverage(combined_dfm, 90)
+```
+
+```{r}
+stem_tok <-tokens_wordstem(combined_tok)
+coverage(dfm(stem_tok), 50)
 
 ```
