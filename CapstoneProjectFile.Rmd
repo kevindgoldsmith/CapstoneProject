@@ -23,7 +23,7 @@ library(utils)
 library(LaF)
 ```
 
-Read in data
+Connect to database
 ```{r}
 myURL <- "https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip"
  
@@ -62,6 +62,24 @@ create_file <- function(file_name, URL, records = 1000, increment = 10000) {
 }
 ```
 
+Read in profanity 
+```{r}
+download.file("https://raw.githubusercontent.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words/master/en", 
+              destfile = "profanity.txt", method = "curl")
+
+profanity <- readLines("profanity.txt")
+
+
+```
+
+Read in all English words
+```{r}
+download.file("https://raw.githubusercontent.com/dwyl/english-words/master/words.txt", 
+              destfile = "english.txt", method = "curl")
+
+all_english <- readLines("english.txt")
+```
+
 Read in US files, create combined corpus and DFM
 ```{r}
 create_file(US.blogs_corp, "~/CapstoneProject/final/en_US/en_US.blogs.txt", 100)
@@ -71,22 +89,23 @@ create_file(US.news_corp, "~/CapstoneProject/final/en_US/en_US.news.txt", 100)
 US.blogs_corp <- corpus(US.blogs_corp)
 US.news_corp <- corpus(US.news_corp)
 US.twit_corp <- corpus(US.twit_corp)
-
 combined_corp <- US.blogs_corp + US.news_corp + US.twit_corp
-combined_tok <- tokens(combined_corp)
 ```
 
+Tokenize and DFM, remove unneeded 
 ```{r}
-download.file("https://raw.githubusercontent.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words/master/en", 
-              destfile = "profanity.txt", method = "curl")
-
-profanity <- readLines("profanity.txt")
-
+combined_tok <- tokens(combined_corp)
+combined_tok <- tokens(combined_tok, remove_punct = TRUE, remove_numbers = TRUE)
 combined_tok <- tokens_select(combined_tok, pattern = profanity, selection = "remove")
+combined_tok <- tokens_select(combined_tok, pattern = all_english, selection = "keep")
+combined_dfm <- dfm(combined_tok)
+combined_ngrams <- tokens_ngrams(combined_tok, 2:3)
+rm(profanity)
+rm(all_english)
 ```
 
 Quiz 1 functions 
-#```{r}
+```{r, eval = FALSE}
 max(sapply(US.blogs_corp,nchar))
 max(sapply(US.news_corp,nchar))
 max(sapply(US.twit_corp,nchar))
@@ -102,16 +121,14 @@ textstat_frequency(dfm_select(dfm(US.twit_corp), pattern =
 
 ```
 
-More cleanup; show top frequency
-```{r}
-combined_tok <- tokens(combined_tok, remove_punct = TRUE, remove_numbers = TRUE)
-combined_dfm <- dfm(combined_tok)
+Show top frequency
+```{r, eval = FALSE}
 textplot_wordcloud(combined_dfm)
 
 ```
 
 How many words needed for x% coverage?
-```{r}
+```{r, eval = FALSE}
 coverage <- function(dfm, percent){
   flag = 0
   partial = 0
@@ -128,10 +145,4 @@ coverage <- function(dfm, percent){
 
 coverage(combined_dfm, 50)
 coverage(combined_dfm, 90)
-```
-
-```{r}
-stem_tok <-tokens_wordstem(combined_tok)
-coverage(dfm(stem_tok), 50)
-
 ```
