@@ -5,12 +5,17 @@ date: "10/24/2019"
 output: html_document
 ---
 
+```{r milestone intro, echo = FALSE, results = 'asis', message = FALSE, warning = FALSE, error = FALSE}
+cat('The objective of this report is to provide an update on the Data Science Capstone project. So far, I have created algorithms to read in data from each of the three text databases, done some exploratory analysis, and created a simple text prediction model.
+
+The three databases are extremely large, so providing only approximated file sizes in the interest of computation time:')
+```
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-Load libraries
-```{r}
+```{r load libraries, message = FALSE, echo = FALSE}
 set.seed(12345)
 
 library(readr)
@@ -21,10 +26,10 @@ library(readtext)
 library(methods)
 library(utils)
 library(LaF)
+library(ggplot2)
 ```
 
-Connect to database
-```{r}
+```{r connect to database, echo = FALSE}
 myURL <- "https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip"
  
 dateDownloaded <- date()
@@ -35,8 +40,8 @@ dateDownloaded <- date()
 }
 ```
 
-Function to read in data
-```{r}
+```{r function to read in data, cache= TRUE, echo = FALSE, results = 'asis', message = FALSE, warning = FALSE, error = FALSE}
+
 create_file <- function(file_name, URL, records = 1000, increment = 10000) {
 
   assign(deparse(substitute(file_name)), rep(0, records), envir = .GlobalEnv)
@@ -51,7 +56,8 @@ create_file <- function(file_name, URL, records = 1000, increment = 10000) {
   }
   n_lines <<- n_lines - increment * 2
   flag = 0
-  
+  cat(deparse(substitute(file_name)), "has approximately", n_lines, "lines",
+      sep = " ")
   for (i in 1:records){
     helper[i] <- readr::read_lines(URL, skip =
                               round(runif(1, min = 1, max = n_lines)),
@@ -62,8 +68,7 @@ create_file <- function(file_name, URL, records = 1000, increment = 10000) {
 }
 ```
 
-Read in profanity 
-```{r}
+```{r read in profanity, echo = FALSE}
 download.file("https://raw.githubusercontent.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words/master/en", 
               destfile = "profanity.txt", method = "curl")
 
@@ -72,16 +77,15 @@ profanity <- readLines("profanity.txt")
 
 ```
 
-Read in all English words
-```{r}
+```{r read in all English words, echo = FALSE}
 download.file("https://raw.githubusercontent.com/dwyl/english-words/master/words.txt", 
               destfile = "english.txt", method = "curl")
 
 all_english <- readLines("english.txt")
 ```
 
-Read in US files, create combined corpus and DFM
-```{r}
+
+```{r read in US files, create combined corpus and DFM, echo = FALSE}
 create_file(US.blogs_corp, "~/CapstoneProject/final/en_US/en_US.blogs.txt", 100)
 create_file(US.twit_corp, "~/CapstoneProject/final/en_US/en_US.twitter.txt", 100)
 create_file(US.news_corp, "~/CapstoneProject/final/en_US/en_US.news.txt", 100)
@@ -92,8 +96,8 @@ US.twit_corp <- corpus(US.twit_corp)
 combined_corp <- US.blogs_corp + US.news_corp + US.twit_corp
 ```
 
-Tokenize and DFM, remove unneeded 
-```{r}
+ 
+```{r tokenize and DFM, remove unneeded, echo = FALSE}
 combined_tok <- tokens(combined_corp)
 combined_tok <- tokens(combined_tok, remove_punct = TRUE, remove_numbers = TRUE)
 combined_tok <- tokens_select(combined_tok, pattern = profanity, selection = "remove")
@@ -104,8 +108,8 @@ rm(profanity)
 rm(all_english)
 ```
 
-Quiz 1 functions 
-```{r, eval = FALSE}
+ 
+```{r quiz 1 functions, eval = FALSE, echo = FALSE}
 max(sapply(US.blogs_corp,nchar))
 max(sapply(US.news_corp,nchar))
 max(sapply(US.twit_corp,nchar))
@@ -121,14 +125,14 @@ textstat_frequency(dfm_select(dfm(US.twit_corp), pattern =
 
 ```
 
-Show top frequency
-```{r, eval = FALSE}
+
+```{r show top frequency, eval = FALSE, echo = FALSE}
 textplot_wordcloud(combined_dfm)
 
 ```
 
-How many words needed for x% coverage?
-```{r, eval = FALSE}
+
+```{r how many words needed for x% coverage?, eval = FALSE, echo = FALSE}
 coverage <- function(dfm, percent){
   flag = 0
   partial = 0
@@ -147,8 +151,8 @@ coverage(combined_dfm, 50)
 coverage(combined_dfm, 90)
 ```
 
-Next word predictor function 
-```{r}
+ 
+```{r next word predictor function, echo = FALSE}
 next_word <- function(firstword){
   possible_words <- kwic(combined_ngrams,
                          pattern = paste0("^",deparse(substitute(firstword)),"+_[^_]+$"),
@@ -165,3 +169,19 @@ next_word <- function(firstword){
 }
 ```
 
+```{r milestone report, echo = FALSE, results = 'asis', message = FALSE, warning = FALSE, error = FALSE}
+cat(length(texts(US.blogs_corp)), 'lines were randomly sampled from each of the three databases to work with for initial analysis. More data will be used in building the final model. These',
+    length(texts(US.blogs_corp)) *3, 
+    'lines were then combined into a single corpus containing',
+    sum(textstat_frequency(dfm(US.blogs_corp))$frequency), 
+    'total words. Profane and non-English words were removed from this corpus. Here is a summary of the top 25 most frequent words in the corpus, and then number of times they appear:', 
+    sep = " ")
+```
+
+```{r, echo = FALSE, message = FALSE}
+textstat_frequency(combined_dfm, n = 25)[,1:2]
+print('Distribution of words by number of times they appear')
+temp <- textstat_frequency(combined_dfm)$frequency
+temp <- ifelse(temp > 20, 20, temp)
+qplot(temp, geom = "histogram", xlim = c(0,20))
+```
