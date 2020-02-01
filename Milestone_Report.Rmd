@@ -1,0 +1,61 @@
+---
+title: "Capstone Project"
+author: "Kevin Goldsmith"
+date: "2/1/2020"
+output: html_document
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load functions, message = FALSE, echo = FALSE}
+source("count_lines.R")
+source("coverage.R")
+source("main.R")
+```
+
+
+The objective of this report is to provide an update on the Data Science Capstone project. So far, I have created algorithms to read in data from each of the three text databases, done some exploratory analysis, and created a simple text prediction model.
+
+The three databases are extremely large, so providing only approximated file sizes in the interest of computation time:
+
+```{r, echo = FALSE, results = 'asis', message = FALSE, warning = FALSE, error = FALSE}
+cat('US.blogs.txt contains', count_lines(US.blogs_corp, "~/CapstoneProject/final/en_US/en_US.blogs.txt", 100), 'lines', sep = " ")
+cat('US.twitter.txt contains', count_lines(US.twit_corp, "~/CapstoneProject/final/en_US/en_US.twitter.txt", 100), 'lines', sep = " ")
+cat('US.news.txt contains', count_lines(US.news_corp, "~/CapstoneProject/final/en_US/en_US.news.txt", 100), 'lines', sep = " ")
+
+cat(length(texts(US.blogs_corp)), 'lines were randomly sampled from each of the three databases to work with for initial analysis. More data will be used in building the final model. These',
+    length(texts(US.blogs_corp)) *3, 
+    'lines were then combined into a single corpus containing',
+    sum(textstat_frequency(dfm(US.blogs_corp))$frequency), 
+    'total words. Profane and non-English words were removed from this corpus.', 
+    sep = " ")
+
+```
+
+## Plots and diagnostics
+
+Top words by frequency
+```{r, cache= TRUE, echo = FALSE, message = FALSE, warning = FALSE, error = FALSE}
+textstat_frequency(combined_dfm, n = 25)[,1:2]
+
+temp <- textstat_frequency(combined_dfm)$frequency
+temp <-ifelse(temp > 20, 20, temp)
+ggplot(data = as.data.frame(temp), aes(temp)) + 
+  geom_histogram(binwidth = 1) + 
+  labs(title = "Unique Words by Frequency",
+       x = "Words",
+       y = "Frequency")
+
+cloud <- textplot_wordcloud(combined_dfm)
+
+cat(coverage(combined_dfm, 25), 'unique words needed for 25% coverage of total words')
+cat(coverage(combined_dfm, 50), 'unique words needed for 50% coverage of total words')
+cat(coverage(combined_dfm, 75), 'unique words needed for 75% coverage of total words')
+```
+
+## Next Steps
+I have created a basic n-gram model with Good-Turing back off to predict the next word in a sentence. Next steps will be optimizing this model, and building it into an R Shiny app.
