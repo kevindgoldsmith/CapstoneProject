@@ -1,5 +1,5 @@
 ---
-title: "Capstone Project"
+title: "Capstone project milestone report"
 author: "Kevin Goldsmith"
 date: "2/1/2020"
 output: html_document
