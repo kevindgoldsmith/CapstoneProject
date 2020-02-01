@@ -1,5 +1,5 @@
-next_word <- function(firstword){
-  possible_words <- kwic(combined_ngrams,
+next_word <- function(firstword, model){
+  possible_words <- kwic(model,
                          pattern = paste0("^",deparse(substitute(firstword)),"+_[^_]+$"),
                          valuetype = "regex")
   starts <- unname(sapply(possible_words[,5], str_locate, "_")[2,]) + 1

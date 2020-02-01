@@ -8,6 +8,7 @@ library(methods)
 library(utils)
 library(LaF)
 library(ggplot2)
+library(stringr)
 set.seed(12345)
 
 source("create_file.R")
@@ -39,12 +40,13 @@ combined_corp <- US.blogs_corp + US.news_corp + US.twit_corp
 
 #data cleanup and manipulation 
 combined_tok <- tokens(combined_corp)
+combined_tok <- tokens_tolower(combined_tok)
 combined_tok <- tokens(combined_tok, remove_punct = TRUE, remove_numbers = TRUE)
 combined_tok <- tokens_select(combined_tok, pattern = profanity, selection = "remove")
 combined_tok <- tokens_select(combined_tok, pattern = all_english, selection = "keep")
 combined_dfm <- dfm(combined_tok)
-combined_ngrams <- tokens_ngrams(combined_tok, 2:3)
+combined_2grams <- tokens_ngrams(combined_tok, 2)
+combined_3grams <- tokens_ngrams(combined_tok, 3)
 rm(profanity)
 rm(all_english)
-
 
