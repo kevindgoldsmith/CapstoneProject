@@ -44,6 +44,7 @@ good_turing <- function(words_dfm){
   for (i in 2 : (max_freq + 1)) {
     gt_p[i, "p_ind"] <- gt_p[i, "p"] / gt_S[i - 1]
   }
-    
+  
+  ###need to assign probabilities to each word
   gt_p <<- gt_p
   }
