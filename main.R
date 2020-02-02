@@ -13,6 +13,7 @@ set.seed(12345)
 
 source("create_file.R")
 source("next_word.R")
+source("good_turing.R")
 
 #import external filesl
 download.file("https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip", 
