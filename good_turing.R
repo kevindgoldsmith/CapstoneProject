@@ -7,20 +7,21 @@ good_turing <- function(words_dfm){
   freqs <- textstat_frequency(words_dfm)$frequency
   out <- cbind.data.frame(features, freqs)
   max_freq <- max(textstat_frequency(words_dfm)$frequency)
-  freq_table <- data.frame(r = integer(), N_r = double())
+  freq_table_full <- data.frame(r = integer(), N_r = double(), prob = double())
   
   #calculate N, r, and N_r 
   N <- sum(freqs)
     for (i in 1 : max_freq) {
-    freq_table[i, "r"] <- i
-    freq_table[i, "N_r"] <- length(which(freqs == i))
-  } 
+    freq_table_full[i, "r"] <- i
+    freq_table_full[i, "N_r"] <- length(which(freqs == i))
+    } 
+  freq_table_full$prob = freq_table_full$r / N 
   
   #limit table to highest r which N_r > 0
   nonzero_max <- suppressWarnings(
-    min(which(freq_table[,2] == 0)) - 1)
+    min(which(freq_table_full[,2] == 0)) - 1)
   if(nonzero_max == Inf) {nonzero_max = max_freq}
-  freq_table <- freq_table[c(1:nonzero_max), ]
+  freq_table <- freq_table_full[c(1:nonzero_max), ]
   
   #calculate log smoothed approximation of emperical data
   lp <- glm(N_r ~ log(r), freq_table, family = "poisson")
@@ -44,7 +45,7 @@ good_turing <- function(words_dfm){
   rebal <- sum(gt_p$p)
   gt_p$p <- gt_p$p / rebal
   
-  #calculate props for individual words
+  #calculate probs for individual words
   gt_p[1, "p_ind"] <- 0
   for (i in 2 : (max_freq + 1)) {
     gt_p[i, "p_ind"] <- gt_p[i, "p"] / gt_S[i - 1]
@@ -52,7 +53,10 @@ good_turing <- function(words_dfm){
   
   ###need to assign probabilities to each word
   out <- inner_join(out, gt_p, by = c("freqs" = "r"))
-  out <- subset(out, select = c(features, p_ind))
+  out <- inner_join(out, freq_table_full, by = c("freqs" = "r"))
+  out$gt_est <- out$p_ind
+  out$true_est <- out$prob
+  out <- subset(out, select = c(features, gt_est, true_est))
   out$features <- as.character(out$features)
   
   #cleanup 
