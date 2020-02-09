@@ -9,11 +9,13 @@ library(utils)
 library(LaF)
 library(ggplot2)
 library(stringr)
+library(dplyr)
 set.seed(12345)
 
 source("create_file.R")
 source("next_word.R")
 source("good_turing.R")
+source("model_prep.R")
 
 #import external filesl
 download.file("https://d396qusza40orc.cloudfront.net/dsscapstone/dataset/Coursera-SwiftKey.zip", 
@@ -46,8 +48,10 @@ combined_tok <- tokens(combined_tok, remove_punct = TRUE, remove_numbers = TRUE)
 combined_tok <- tokens_select(combined_tok, pattern = profanity, selection = "remove")
 combined_tok <- tokens_select(combined_tok, pattern = all_english, selection = "keep")
 combined_dfm <- dfm(combined_tok)
-combined_2grams <- tokens_ngrams(combined_tok, 2)
-combined_3grams <- tokens_ngrams(combined_tok, 3)
 rm(profanity)
 rm(all_english)
+
+#build model
+all_ps <- model_prep(combined_dfm)
+
 

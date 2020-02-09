@@ -3,7 +3,9 @@ good_turing <- function(words_dfm){
   #smoothed likelihood predictions by words 
   
   #data prep
+  features <- textstat_frequency(words_dfm)$feature
   freqs <- textstat_frequency(words_dfm)$frequency
+  out <- cbind.data.frame(features, freqs)
   max_freq <- max(textstat_frequency(words_dfm)$frequency)
   freq_table <- data.frame(r = integer(), N_r = double())
   
@@ -15,7 +17,9 @@ good_turing <- function(words_dfm){
   } 
   
   #limit table to highest r which N_r > 0
-  nonzero_max <- min(which(freq_table[,2] == 0)) - 1
+  nonzero_max <- suppressWarnings(
+    min(which(freq_table[,2] == 0)) - 1)
+  if(nonzero_max == Inf) {nonzero_max = max_freq}
   freq_table <- freq_table[c(1:nonzero_max), ]
   
   #calculate log smoothed approximation of emperical data
@@ -23,10 +27,11 @@ good_turing <- function(words_dfm){
   new_data <- data.frame(r = 1:(max_freq + 1))
   preds <- exp(predict(lp, newdata = new_data))
 
-  #use emperical data to N = 10, smoothed estimates after 
+  #use emperical data to N = 10 or nonzero_max, smoothed estimates after
+  emp_max <- min(10, nonzero_max)
   gt_S <- rep(NULL, max_freq)
-  gt_S[1:10] <- freq_table[1:10, "N_r"]
-  gt_S[11:(max_freq + 1)] <- preds[11:(max_freq + 1)]
+  gt_S[1:emp_max] <- freq_table[1:emp_max, "N_r"]
+  gt_S[(emp_max + 1):(max_freq + 1)] <- preds[(emp_max + 1):(max_freq + 1)]
   
   #calculate probs by frequency
   gt_p <- data.frame(r = integer(), p = double(), p_ind = double())
@@ -46,5 +51,13 @@ good_turing <- function(words_dfm){
   }
   
   ###need to assign probabilities to each word
-  gt_p <<- gt_p
+  out <- inner_join(out, gt_p, by = c("freqs" = "r"))
+  out <- subset(out, select = c(features, p_ind))
+  out$features <- as.character(out$features)
+  
+  #cleanup 
+  rm(freq_table)
+  rm(gt_S)
+  rm(gt_p)
+  out
   }
