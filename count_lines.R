@@ -1,4 +1,4 @@
-count_lines <- function(file_name, URL, records = 1000, increment = 10000) {
+count_lines <- function(URL, records = 1000, increment = 10000) {
   
   flag = 0
   n_lines <<- 0
