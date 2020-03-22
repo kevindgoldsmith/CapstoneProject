@@ -3,7 +3,6 @@ library(readr)
 library(data.table)
 library(tm)
 library(quanteda)
-library(readtext)
 library(methods)
 library(utils)
 library(LaF)
@@ -11,13 +10,14 @@ library(ggplot2)
 library(stringr)
 library(dplyr)
 library(rbenchmark)
+library(caret)
 set.seed(12345)
 
 source("create_file.R")
 source("next_word.R")
 source("good_turing.R")
 source("model_prep.R")
-source("model2.R")
+source("count_lines.R")
 
 
 #import external filesl
@@ -35,9 +35,12 @@ profanity <- readLines("profanity.txt")
 all_english <- readLines("english.txt")
 
 #Create combined corpus
-create_file(US.blogs_corp, "~/CapstoneProject/final/en_US/en_US.blogs.txt", 50000)
-create_file(US.twit_corp, "~/CapstoneProject/final/en_US/en_US.twitter.txt", 50000)
-create_file(US.news_corp, "~/CapstoneProject/final/en_US/en_US.news.txt", 50000)
+create_file(US.blogs_corp, "~/CapstoneProject/final/en_US/en_US.blogs.txt", 
+            records = .8, proportion = "Y")
+create_file(US.twit_corp, "~/CapstoneProject/final/en_US/en_US.twitter.txt", 
+            records = .8, proportion = "Y")
+create_file(US.news_corp, "~/CapstoneProject/final/en_US/en_US.news.txt", 
+            records = .8, proportion = "Y")
 
 US.blogs_corp <- corpus(US.blogs_corp)
 US.news_corp <- corpus(US.news_corp)
@@ -55,8 +58,8 @@ rm(profanity)
 rm(all_english)
 
 #build model
-all_ps <- model_prep(combined_dfm)
-results <- model2("all the", all_ps)
+all_ps <- model_prep(combined_tok)
+results <- next_word("all the", all_ps)
 
 
 
