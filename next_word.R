@@ -1,5 +1,5 @@
 next_word <- function(string, probs){
-  words <- str_count(string, pattern = "_")
+  words <- str_count(string, pattern = " ")
   w <- word(string, - 1)
   w_n1 <- word(string, -2)
 

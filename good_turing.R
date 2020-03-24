@@ -5,8 +5,12 @@ good_turing <- function(words_dfm){
   #data prep
   features <- textstat_frequency(words_dfm)$feature
   freqs <- textstat_frequency(words_dfm)$frequency
-  out <- cbind.data.frame(features, freqs)
-  max_freq <- max(textstat_frequency(words_dfm)$frequency)
+  out <- setNames(data.frame(matrix(ncol = 2, nrow = length(features))), 
+                   c("features", "freqs"))
+  out[,"features"] <- features
+  out[,"freqs"] <- freqs
+  
+  max_freq <- max(freqs)
   freq_table_full <- setNames(data.frame(matrix(ncol = 3, nrow = max_freq)), 
                               c("r", "N_r", "prob"))
     
@@ -46,10 +50,9 @@ good_turing <- function(words_dfm){
   gt_p$p <- gt_p$p / rebal
   
   #calculate probs for individual words
+  
+  gt_p[, "p_ind"] <- gt_p[, "p"] / shift(gt_S, 1)
   gt_p[1, "p_ind"] <- 0
-  for (i in 2 : (max_freq + 1)) {
-    gt_p[i, "p_ind"] <- gt_p[i, "p"] / gt_S[i - 1]
-  }
   
   ###need to assign probabilities to each word
   out <- inner_join(out, gt_p, by = c("freqs" = "r"))
