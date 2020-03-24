@@ -31,7 +31,7 @@ next_word <- function(string, probs){
   
   lowest <- suppressWarnings(
     min(min(possible_words3$prob), min(possible_words2$prob)))
-  lowest <- if(lowest == Inf){0}
+  lowest <- if(lowest == Inf){0}else{lowest}
   
   possible_words1 <- filter(probs, 
                             gt_est > lowest,

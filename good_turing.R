@@ -7,14 +7,14 @@ good_turing <- function(words_dfm){
   freqs <- textstat_frequency(words_dfm)$frequency
   out <- cbind.data.frame(features, freqs)
   max_freq <- max(textstat_frequency(words_dfm)$frequency)
-  freq_table_full <- data.frame(r = integer(), N_r = double(), prob = double())
-  
+  freq_table_full <- setNames(data.frame(matrix(ncol = 3, nrow = max_freq)), 
+                              c("r", "N_r", "prob"))
+    
   #calculate N, r, and N_r 
   N <- sum(freqs)
-    for (i in 1 : max_freq) {
-    freq_table_full[i, "r"] <- i
-    freq_table_full[i, "N_r"] <- length(which(freqs == i))
-    } 
+  
+  freq_table_full[,"r"] <- 1:max_freq
+  freq_table_full[, "N_r"] <- match(row_number(freq_table_full$r), freqs)
   freq_table_full$prob = freq_table_full$r / N 
   
   #limit table to highest r which N_r > 0
@@ -35,11 +35,11 @@ good_turing <- function(words_dfm){
   gt_S[(emp_max + 1):(max_freq + 1)] <- preds[(emp_max + 1):(max_freq + 1)]
   
   #calculate probs by frequency
-  gt_p <- data.frame(r = integer(), p = double(), p_ind = double())
-  for (i in 1 : (max_freq + 1)) {
-    gt_p[i, "r"] <- i - 1
-    gt_p[i, "p"] <- (i * gt_S[i]) / N
-  }
+  gt_p <- setNames(data.frame(matrix(ncol = 3, nrow = max_freq + 1)), 
+                   c("r", "p", "p_ind"))
+  gt_p[,"r"] <- 1:(max_freq  + 1) - 1 
+  gt_p[,"p"] <- (row_number(gt_p$r) * gt_S) / N
+
   
   #rebalance probs to sum to 1 
   rebal <- sum(gt_p$p)
