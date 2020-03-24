@@ -11,7 +11,7 @@ library(stringr)
 library(dplyr)
 library(caret)
 library(profvis)
-set.seed(12345)
+set.seed(12346)
 
 source("create_file.R")
 source("next_word.R")
