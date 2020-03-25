@@ -1,4 +1,4 @@
-good_turing <- function(words_dfm){
+good_turing <- function(words_dfm, min_words){
 ## this function applies Good Turing discounting to output a matrix of 
   #smoothed likelihood predictions by words 
   
@@ -59,6 +59,7 @@ good_turing <- function(words_dfm){
   out <- inner_join(out, freq_table_full, by = c("freqs" = "r"))
   out$gt_est <- out$p_ind
   out$true_est <- out$prob
+  out <- filter(out, freqs > min_words)
   out <- subset(out, select = c(features, gt_est, true_est))
   out$features <- as.character(out$features)
   
