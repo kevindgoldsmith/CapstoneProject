@@ -20,9 +20,6 @@ load_data <- function(){
   file.remove("rawdata.zip")
   
   
-  profanity <- readLines("profanity.txt")
-  all_english <- readLines("english.txt")
-  
   #Create combined corpus
   US.blogs_corp <- readr::read_lines("~/CapstoneProject/final/en_US/en_US.blogs.txt")
   US.twit_corp <- readr::read_lines("~/CapstoneProject/final/en_US/en_US.twitter.txt")
