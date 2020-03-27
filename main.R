@@ -17,21 +17,17 @@ source("good_turing.R")
 source("model_prep.R")
 source("load_data.R")
 source("create_toks.R")
+source("convert_to_data_frame.R")
 
 load_data()
-create_toks(train, .002)
-create_toks(test, 1)
-
+train_toks <- create_toks(train, .002)
+test_toks <- create_toks(test, .000002)
 
 rm(train)
+rm(test)
 
+test_df <- convert_to_data_frame(test_toks)
 
-#build model
+pred_model <- model_prep(train_toks, 2)
 
-pred_model <- model_prep(train_tok, 2)
-
-
-results <- next_word("all the", pred_model)
-
-
-
+out <- score_model(pred_model, test_df)

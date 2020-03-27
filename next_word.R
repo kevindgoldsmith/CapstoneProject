@@ -1,7 +1,7 @@
-next_word <- function(string, probs){
+next_word <- function(string, probs, verbose = "T", n = 3){
   words <- str_count(string, pattern = " ")
-  w <- word(string, - 1)
-  w_n1 <- word(string, -2)
+  w <- word(string, - 1, sep = "_")
+  w_n1 <- word(string, -2, sep = "_")
 
   p_w <- probs[which(probs$features == w), "true_est"]
   p_w1 <- probs[which(probs$features == paste0(
@@ -48,5 +48,6 @@ next_word <- function(string, probs){
   preds$next_word <- word(preds$features, -1, sep = "_")
   preds <- select(preds, c(next_word, ngram, prob))
   preds <- preds[order(preds$prob, decreasing = TRUE),]
-  preds
+  if(verbose == "T") {return(head(preds, n))}
+  if(verbose != "T") return(head(preds$next_word, n))
   }
