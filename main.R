@@ -19,16 +19,19 @@ source("load_data.R")
 source("create_toks.R")
 source("convert_to_data_frame.R")
 source("score_model.R")
+source("full_test.R")
 
 load_data()
-train_toks <- create_toks(train, .2)
-test_toks <- create_toks(test, .0002)
 
-rm(train)
+test_toks <- create_toks(test, .0005)
+test_df <- convert_to_data_frame(test_toks)
 rm(test)
 
-test_df <- convert_to_data_frame(test_toks)
-
-pred_model <- model_prep(train_toks, 2)
-
-out <- score_model(pred_model, test_df)
+full_test(train, test_df, p = .1, min_words = 1, stem = F)
+full_test(train, test_df, p = .1, min_words = 1, stem = T)
+full_test(train, test_df, p = .1, min_words = 2, stem = F)
+full_test(train, test_df, p = .1, min_words = 2, stem = T)
+full_test(train, test_df, p = .1, min_words = 3, stem = F)
+full_test(train, test_df, p = .1, min_words = 3, stem = T)
+full_test(train, test_df, p = .3, min_words = 3, stem = F)
+full_test(train, test_df, p = .5, min_words = 3, stem = F)

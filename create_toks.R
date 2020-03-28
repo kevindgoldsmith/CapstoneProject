@@ -1,4 +1,4 @@
-create_toks <- function(data_in, p){
+create_toks <- function(data_in, p, stem = F){
   
   if(p != 1){
     index <- unlist(createDataPartition(1:length(data_in), p = p))
@@ -16,9 +16,7 @@ create_toks <- function(data_in, p){
   data_corp <- tokens(data_corp, remove_punct = TRUE, remove_numbers = TRUE)
   data_corp <- tokens_select(data_corp, pattern = profanity, selection = "remove")
   data_corp <- tokens_select(data_corp, pattern = all_english, selection = "keep")
-
-  rm(profanity)
-  rm(all_english)
+  if(stem == T){data_corp <- tokens_wordstem(data_corp)}
   
   data_corp
 }
