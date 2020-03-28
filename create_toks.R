@@ -9,7 +9,7 @@ create_toks <- function(data_in, p){
   profanity <- readLines("profanity.txt")
   all_english <- readLines("english.txt")
   
-  #data_incleanup and manipulation 
+  #data cleanup and manipulation 
   data_corp <- corpus(data_in)
   data_corp <- tokens(data_corp)
   data_corp <- tokens_tolower(data_corp)

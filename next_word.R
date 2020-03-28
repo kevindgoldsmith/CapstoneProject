@@ -4,9 +4,8 @@ next_word <- function(string, probs, verbose = "T", n = 3){
   w_n1 <- word(string, -2, sep = "_")
 
   p_w <- probs[which(probs$features == w), "true_est"]
-  p_w1 <- probs[which(probs$features == paste0(
-    w_n1,"_", w
-  )), "true_est"]
+  p_w1 <- probs[which(probs$features == paste0(w_n1,"_", w)), 
+    "true_est"]
   
   possible_words3 <- filter(probs, 
                             startsWith(features,
@@ -31,7 +30,8 @@ next_word <- function(string, probs, verbose = "T", n = 3){
   
   lowest <- suppressWarnings(
     min(min(possible_words3$prob), min(possible_words2$prob)))
-  lowest <- if(lowest == Inf){0}else{lowest}
+  
+  if(lowest == Inf){lowest <- 0}
   
   possible_words1 <- filter(probs, 
                             gt_est > lowest,
@@ -49,5 +49,5 @@ next_word <- function(string, probs, verbose = "T", n = 3){
   preds <- select(preds, c(next_word, ngram, prob))
   preds <- preds[order(preds$prob, decreasing = TRUE),]
   if(verbose == "T") {return(head(preds, n))}
-  if(verbose != "T") return(head(preds$next_word, n))
+  if(verbose != "T") {return(head(preds$next_word, n))}
   }

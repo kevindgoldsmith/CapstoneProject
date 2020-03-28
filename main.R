@@ -18,10 +18,11 @@ source("model_prep.R")
 source("load_data.R")
 source("create_toks.R")
 source("convert_to_data_frame.R")
+source("score_model.R")
 
 load_data()
-train_toks <- create_toks(train, .002)
-test_toks <- create_toks(test, .000002)
+train_toks <- create_toks(train, .2)
+test_toks <- create_toks(test, .0002)
 
 rm(train)
 rm(test)
