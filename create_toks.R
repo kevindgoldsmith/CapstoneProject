@@ -1,7 +1,7 @@
 create_toks <- function(data_in, p, stem = F){
   
   if(p != 1){
-    index <- unlist(createDataPartition(1:length(data_in), p = p))
+    index <- unlist(caret::createDataPartition(1:length(data_in), p = p))
     data_in <- data_in[index]
   }
   
