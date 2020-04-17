@@ -23,12 +23,12 @@ good_turing <- function(words_dfm, min_words){
   
   #limit table to highest r which N_r > 0
   nonzero_max <- suppressWarnings(
-    min(which(freq_table_full[,2] == 0)) - 1)
+    min(which(is.na(freq_table_full["N_r"]))) - 1)
   if(nonzero_max == Inf) {nonzero_max = max_freq}
   freq_table <- freq_table_full[c(1:nonzero_max), ]
   
   #calculate log smoothed approximation of emperical data
-  lp <- glm(N_r ~ log(r), freq_table, family = "poisson")
+  lp <- glm(N_r ~ r, freq_table, family = "quasipoisson")
   new_data <- data.frame(r = 1:(max_freq + 1))
   preds <- exp(predict(lp, newdata = new_data))
 
@@ -43,11 +43,6 @@ good_turing <- function(words_dfm, min_words){
                    c("r", "p", "p_ind"))
   gt_p[,"r"] <- 1:(max_freq  + 1) - 1 
   gt_p[,"p"] <- (row_number(gt_p$r) * gt_S) / N
-
-  
-  #rebalance probs to sum to 1 
-  rebal <- sum(gt_p$p)
-  gt_p$p <- gt_p$p / rebal
   
   #calculate probs for individual words
   
@@ -57,6 +52,11 @@ good_turing <- function(words_dfm, min_words){
   ###need to assign probabilities to each word
   out <- inner_join(out, gt_p, by = c("freqs" = "r"))
   out <- inner_join(out, freq_table_full, by = c("freqs" = "r"))
+  out$p_ind <- ifelse(is.nan(out$p_ind), 0, out$p_ind)
+  min <- min(out$p_ind[out$p_ind > 0], na.rm = FALSE)
+  out[,"p_ind"] <- pmax(out$p_ind, min)
+  rebal <- sum(out$p_ind)
+  out$p_ind <- out$p_ind / rebal
   out$gt_est <- out$p_ind
   out$true_est <- out$prob
   out <- filter(out, freqs > min_words)
@@ -68,4 +68,4 @@ good_turing <- function(words_dfm, min_words){
   rm(gt_S)
   rm(gt_p)
   out
-  }
+}
